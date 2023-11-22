@@ -1,7 +1,0 @@
----
-- hosts: keycloak_servers
-  become: yes
-  roles:
-    - SSO-Keycloak-ansible-role
-  # vars:
-  #   keycloak_version: "15.0.2"
