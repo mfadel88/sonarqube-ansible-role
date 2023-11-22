@@ -1,2 +1,67 @@
 ---
 # tasks file for sonarqube
+- name: Install prerequisites
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: [ 'java-11-openjdk', 'unzip', 'wget' ]
+
+- name: Create sonarqube group
+  group:
+    name: sonarqube
+    state: present
+
+- name: Create sonarqube user
+  user:
+    name: sonarqube
+    group: sonarqube
+    state: present
+
+- name: Create required directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: sonarqube
+    group: sonarqube
+    mode: '0777'
+  with_items:
+    - '/server'
+    - '/server/sonarqube'
+    
+- name: Add SonarQube user
+  user:
+    name: "{{ sonarqube_user }}"
+    system: yes
+    shell: /sbin/nologin
+
+- name: Download SonarQube
+  get_url:
+    url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
+    dest: "/server/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
+
+- name: Extract SonarQube
+  unarchive:
+    src: "/server/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
+    dest: "{{ sonarqube_install_dir }}"
+    remote_src: yes
+  become: yes
+  become_user: "{{ sonarqube_user }}"
+
+- name: Set ownership for SonarQube directory
+  file:
+    path: "/server/sonarqube"
+    state: directory
+    owner: sonarqube
+    group: sonarqube
+    mode: '0775'
+
+- name: Configure SonarQube service
+  template:
+    src: sonar.service.j2
+    dest: /etc/systemd/system/sonar.service
+  # notify: restart sonarqube
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  notify: restart sonarqube

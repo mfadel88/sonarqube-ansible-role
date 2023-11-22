@@ -1,2 +1,5 @@
 ---
 # vars file for sonarqube
+sonarqube_version: "8.9"  # specify the desired version
+sonarqube_install_dir: "/server/sonarqube"
+sonarqube_user: "sonarqube"
