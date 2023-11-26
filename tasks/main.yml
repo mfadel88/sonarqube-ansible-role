@@ -36,6 +36,7 @@
 
 - name: Download SonarQube
   get_url:
+    # url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
     url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
     dest: "/server/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
 
