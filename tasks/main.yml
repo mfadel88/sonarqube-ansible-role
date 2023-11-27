@@ -65,4 +65,9 @@
 - name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: yes
-  notify: restart sonarqube
+
+- name: Start and enable Keycloak service
+  systemd:
+    name: sonar
+    state: started
+    enabled: yes
